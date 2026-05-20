@@ -17,20 +17,26 @@ class MetricSpec:
     decimals: int = 0
 
 
-METRICS = [
-    MetricSpec("人口", ("人口", "総人口", "総人口数"), "人"),
-    MetricSpec("65歳以上人口", ("65歳以上人口", "高齢者人口", "65歳以上", "老年人口"), "人"),
-    MetricSpec("総面積", ("総面積", "総面積(k㎡)", "総面積(km2)", "面積"), "km2", 2),
-    MetricSpec("可住地面積", ("可住地面積", "可住地面積(k㎡)", "可住地面積(km2)", "可住面積"), "km2", 2),
-    MetricSpec("人口密度", ("人口密度", "人口密度(人/k㎡)", "総人口密度"), "人/km2", 1),
-    MetricSpec("高齢者可住地密度", ("高齢者可住地密度", "高齢者可住地密度(人/k㎡)", "65歳以上可住地密度", "高齢者密度"), "人/km2", 1),
-    MetricSpec("訪問介護事業所数", ("訪問介護事業所数", "訪問介護事業者数", "事業所数"), "事業所"),
-    MetricSpec("実質競合数", ("採用する実質競合数", "実質競合数", "全国版_実質競合推定", "競合度4以上", "競合数"), "事業所", 1),
-    MetricSpec("推定訪問介護利用者数", ("推定訪問介護利用者数", "推定利用者数", "訪問介護利用者数"), "人"),
-    MetricSpec("1事業所あたり潜在利用者数", ("1事業所あたり潜在利用者数", "一事業所あたり潜在利用者数", "事業所あたり潜在利用者数"), "人/事業所", 1),
-    MetricSpec("250万円達成必要人数", ("250万円達成必要人数", "250万達成必要人数", "月商250万円達成必要人数"), "人"),
-    MetricSpec("達成余力倍率", ("達成余力倍率", "余力倍率"), "倍", 2),
-    MetricSpec("参入後達成余力倍率", ("参入後達成余力倍率", "参入後余力倍率", "参入後の達成余力倍率"), "倍", 2),
+CURRENT_METRICS = [
+    MetricSpec("人口", ("人口", "総人口"), "人"),
+    MetricSpec("65歳以上人口", ("65歳以上人口", "高齢者人口"), "人"),
+    MetricSpec("総面積", ("総面積", "総面積(k㎡)", "総面積(km2)"), "km2", 2),
+    MetricSpec("可住地面積", ("可住地面積", "可住地面積(k㎡)", "可住地面積(km2)"), "km2", 2),
+    MetricSpec("人口密度", ("人口密度", "可住地人口密度"), "人/km2", 1),
+    MetricSpec("高齢者可住地密度", ("高齢者可住地密度", "高齢者可住地密度(人/k㎡)"), "人/km2", 1),
+    MetricSpec("訪問介護事業所数", ("訪問介護事業所数",), "事業所"),
+    MetricSpec("実質競合数", ("採用する実質競合数", "実質競合数", "競合度4以上", "全国版_実質競合推定"), "事業所", 1),
+    MetricSpec("推定訪問介護利用者数", ("推定訪問介護利用者数",), "人"),
+    MetricSpec("1事業所あたり潜在利用者数", ("1事業所あたり潜在利用者数",), "人/事業所", 1),
+    MetricSpec("250万円達成必要人数", ("250万円達成必要人数",), "人"),
+    MetricSpec("達成余力倍率", ("達成余力倍率",), "倍", 2),
+]
+
+POST_ENTRY_METRICS = [
+    MetricSpec("参入後事業所数", ("参入後事業所数", "新規参入後事業所数"), "事業所"),
+    MetricSpec("参入後実質競合数", ("参入後実質競合数", "新規参入後実質競合数"), "事業所", 1),
+    MetricSpec("参入後1事業所市場", ("参入後1事業所市場", "参入後1事業所あたり潜在利用者数"), "人/事業所", 1),
+    MetricSpec("参入後達成余力倍率", ("参入後達成余力倍率", "参入後余力倍率"), "倍", 2),
 ]
 
 
@@ -170,11 +176,11 @@ def get_metric_raw_value(row: pd.Series, columns: dict[str, str], spec: MetricSp
     return None
 
 
-def collect_metrics(row: pd.Series, df: pd.DataFrame) -> list[dict[str, Any]]:
+def collect_metrics(row: pd.Series, df: pd.DataFrame, metric_specs: list[MetricSpec]) -> list[dict[str, Any]]:
     columns = make_column_map(df)
     metrics = []
 
-    for spec in METRICS:
+    for spec in metric_specs:
         raw_value = get_metric_raw_value(row, columns, spec)
         metrics.append(
             {
@@ -330,9 +336,10 @@ selected_index = int(selected_label.split(":", 1)[0])
 selected_row = matches.loc[selected_index]
 municipality_name = str(selected_row.get(name_column, municipality_query))
 
-metrics = collect_metrics(selected_row, df)
-headline, comments = create_market_comment(metrics)
+current_metrics = collect_metrics(selected_row, df, CURRENT_METRICS)
+post_entry_metrics = collect_metrics(selected_row, df, POST_ENTRY_METRICS)
 
+headline, comments = create_market_comment(current_metrics + post_entry_metrics)
 st.subheader(f"{municipality_name} の市場分析")
 st.success(f"市場判定: {headline}")
 
@@ -349,9 +356,16 @@ st.dataframe(
     hide_index=True,
 )
 
-st.subheader("主要指標")
+st.subheader("現状の市場指標")
 st.dataframe(
-    pd.DataFrame(metrics)[["指標", "値"]],
+    pd.DataFrame(current_metrics)[["指標", "値"]],
+    use_container_width=True,
+    hide_index=True,
+)
+
+st.subheader("新規参入後シミュレーション")
+st.dataframe(
+    pd.DataFrame(post_entry_metrics)[["指標", "値"]],
     use_container_width=True,
     hide_index=True,
 )
