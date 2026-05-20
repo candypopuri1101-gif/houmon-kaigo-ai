@@ -404,17 +404,8 @@ st.success(f"市場判定: {headline}")
 
 st.subheader("現状の市場指標")
 
-metric_columns = st.columns(3)
 
-all_metrics = current_metrics + post_entry_metrics
 
-metric_columns = st.columns(3)
-
-for index, metric in enumerate(all_metrics):
-    with metric_columns[index % 3]:
-        st.metric(metric["指標"], metric["値"])
-
-st.subheader("一致する市町村データ")
 
 
 st.subheader("現状の市場指標")
