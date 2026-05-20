@@ -401,13 +401,6 @@ headline, comments = create_market_comment(current_metrics + post_entry_metrics)
 st.success(f"市場判定: {headline}")
 
 
-
-st.subheader("現状の市場指標")
-
-
-
-
-
 st.subheader("現状の市場指標")
 st.dataframe(
     pd.DataFrame(current_metrics)[["指標", "値"]],
