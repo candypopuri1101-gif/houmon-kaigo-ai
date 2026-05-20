@@ -6,11 +6,10 @@ import re
 from dataclasses import dataclass
 from typing import Any
 
-import gspread
+
 import pandas as pd
 import streamlit as st
 from dotenv import load_dotenv
-from google.oauth2.service_account import Credentials
 from openai import OpenAI
 
 
@@ -18,7 +17,7 @@ load_dotenv()
 
 DEFAULT_SHEET_NAME = "市町村データ"
 DEFAULT_MODEL = os.getenv("OPENAI_MODEL", "gpt-5")
-SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
+
 
 
 @dataclass(frozen=True)
@@ -99,3 +98,4 @@ def parse_number(value: Any) -> float | None:
     match = re.search(r"-?\d+(?:\.\d+)?", text)
     if match:
         return float(match.group())
+    return None
