@@ -335,6 +335,14 @@ post_entry_metrics = collect_metrics(selected_row, df, POST_ENTRY_METRICS)
 # 不足している指標をアプリ側で計算
 elderly = metric_number(current_metrics, "65歳以上人口")
 competitors = metric_number(current_metrics, "実質競合数")
+
+if competitors is None:
+    for column_name in ["採用する実質競合数", "競合度4以上", "全国版_実質競合推定", "実質競合数", "競合数"]:
+        if column_name in selected_row.index:
+            competitors = parse_number(selected_row.get(column_name))
+            if competitors is not None:
+                break
+                
 offices = metric_number(current_metrics, "訪問介護事業所数")
 
 estimated_users = elderly * 0.2 * 0.2 if elderly is not None else None
