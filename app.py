@@ -398,7 +398,7 @@ post_entry_metrics.extend([
 ])
 headline, comments = create_market_comment(current_metrics + post_entry_metrics)
 
-st.success(f"市場判定: {headline}")
+st.success(f"市場参入判定: {headline}")
 
 
 st.subheader("現状の市場指標")
