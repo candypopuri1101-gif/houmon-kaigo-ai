@@ -98,3 +98,4 @@ def parse_number(value: Any) -> float | None:
     text = text.replace(",", "")
     match = re.search(r"-?\d+(?:\.\d+)?", text)
     if match:
+        return float(match.group())
