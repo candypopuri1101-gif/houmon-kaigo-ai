@@ -411,11 +411,7 @@ for index, metric in enumerate(all_metrics):
         st.metric(metric["指標"], metric["値"])
 
 st.subheader("一致する市町村データ")
-st.dataframe(
-    pd.DataFrame([selected_row]),
-    use_container_width=True,
-    hide_index=True,
-)
+
 
 st.subheader("現状の市場指標")
 st.dataframe(
