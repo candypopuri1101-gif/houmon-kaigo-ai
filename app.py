@@ -25,7 +25,7 @@ CURRENT_METRICS = [
     MetricSpec("人口密度", ("人口密度", "可住地人口密度"), "人/km2", 1),
     MetricSpec("高齢者可住地密度", ("高齢者可住地密度", "高齢者可住地密度(人/k㎡)"), "人/km2", 1),
     MetricSpec("訪問介護事業所数", ("訪問介護事業所数",), "事業所"),
-    MetricSpec("実質競合数", ("採用する実質競合数", "実質競合数", "競合度4以上", "全国版_実質競合推定"), "事業所", 1),
+    
 ]
 
 POST_ENTRY_METRICS = [
@@ -378,13 +378,18 @@ post_capacity_ratio = (
     if post_users_per_competitor is not None
     else None
 )
+
 current_metrics.extend([
+    {"指標": "実質競合数", "値": f"{competitors:,.1f} 事業所" if competitors is not None else "-", "数値": competitors, "単位": "事業所"},
+
     {"指標": "推定訪問介護利用者数", "値": f"{estimated_users:,.0f} 人" if estimated_users is not None else "-", "数値": estimated_users, "単位": "人"},
+
     {"指標": "1事業所あたり潜在利用者数", "値": f"{users_per_competitor:,.1f} 人/事業所" if users_per_competitor is not None else "-", "数値": users_per_competitor, "単位": "人/事業所"},
+
     {"指標": "250万円達成必要人数", "値": f"{needed_users:,.1f} 人", "数値": needed_users, "単位": "人"},
+
     {"指標": "達成余力倍率", "値": f"{capacity_ratio:,.2f} 倍" if capacity_ratio is not None else "-", "数値": capacity_ratio, "単位": "倍"},
 ])
-
 post_entry_metrics.extend([
     {"指標": "参入後事業所数", "値": f"{post_offices:,.0f} 事業所" if post_offices is not None else "-", "数値": post_offices, "単位": "事業所"},
     {"指標": "参入後実質競合数", "値": f"{post_competitors:,.1f} 事業所" if post_competitors is not None else "-", "数値": post_competitors, "単位": "事業所"},
