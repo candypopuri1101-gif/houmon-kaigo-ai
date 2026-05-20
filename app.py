@@ -248,14 +248,17 @@ def create_market_comment(metrics: list[dict[str, Any]]) -> tuple[str, list[str]
         elif population_density < 300 and elderly_density is not None and elderly_density < 80:
             comments.append("人口密度が低く高齢者可住地密度も低いため、移動時間の管理が重要です。")
 
-    if score >= 3:
-        headline = "有望"
-    elif score >= 1:
-        headline = "条件付き有望"
-    elif score == 0:
-        headline = "中立"
-    else:
-        headline = "慎重検討"
+   if score >= 4:
+    headline = "◎ かなり有望"
+
+elif score >= 2:
+    headline = "◯ 有望"
+
+elif score >= 0:
+    headline = "△ 普通だが工夫が必要"
+
+else:
+    headline = "✕ 厳しいため参入非推奨"
 
     return headline, comments
 
