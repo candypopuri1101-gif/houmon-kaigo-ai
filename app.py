@@ -436,7 +436,7 @@ for comment in comments:
 download_text = (
     f"# {municipality_name} 訪問介護市場分析\n\n"
     f"## 市場判定\n{headline}\n\n"
-    f"## 主要指標\n{metrics_to_markdown(all_metrics)}\n\n"
+    f"## 主要指標\n{metrics_to_markdown(current_metrics + post_entry_metrics)}\n\n"
     "## 市場分析コメント\n"
     + "\n".join(f"- {comment}" for comment in comments)
     + "\n"
