@@ -407,12 +407,25 @@ st.dataframe(
     hide_index=True,
 )
 
-st.subheader("新規参入後シミュレーション")
+st.markdown(
+    """
+    <div style="
+        background-color:#e8f4ff;
+        padding:20px;
+        border-radius:10px;
+    ">
+    <h3>新規参入後シミュレーション</h3>
+    """,
+    unsafe_allow_html=True
+)
+
 st.dataframe(
     pd.DataFrame(post_entry_metrics)[["指標", "値"]],
     use_container_width=True,
     hide_index=True,
 )
+
+st.markdown("</div>", unsafe_allow_html=True)
 
 st.subheader("市場分析コメント")
 
