@@ -400,12 +400,7 @@ headline, comments = create_market_comment(current_metrics + post_entry_metrics)
 
 st.success(f"市場判定: {headline}")
 
-st.subheader("一致する市町村データ")
-st.dataframe(
-    pd.DataFrame([selected_row]),
-    use_container_width=True,
-    hide_index=True,
-)
+
 
 st.subheader("現状の市場指標")
 
