@@ -339,6 +339,53 @@ municipality_name = str(selected_row.get(name_column, municipality_query))
 current_metrics = collect_metrics(selected_row, df, CURRENT_METRICS)
 post_entry_metrics = collect_metrics(selected_row, df, POST_ENTRY_METRICS)
 
+# 不足している指標をアプリ側で計算
+elderly = metric_number(current_metrics, "65歳以上人口")
+competitors = metric_number(current_metrics, "実質競合数")
+offices = metric_number(current_metrics, "訪問介護事業所数")
+
+estimated_users = elderly * 0.2 * 0.2 if elderly is not None else None
+needed_users = 2500000 / 40000
+
+users_per_competitor = (
+    estimated_users / competitors
+    if estimated_users is not None and competitors not in (None, 0)
+    else None
+)
+
+capacity_ratio = (
+    users_per_competitor / needed_users
+    if users_per_competitor is not None
+    else None
+)
+
+post_competitors = competitors + 1 if competitors is not None else None
+post_offices = offices + 1 if offices is not None else None
+
+post_users_per_competitor = (
+    estimated_users / post_competitors
+    if estimated_users is not None and post_competitors not in (None, 0)
+    else None
+)
+
+post_capacity_ratio = (
+    post_users_per_competitor / needed_users
+    if post_users_per_competitor is not None
+    else None
+)
+current_metrics.extend([
+    {"指標": "推定訪問介護利用者数", "値": f"{estimated_users:,.0f} 人" if estimated_users is not None else "-", "数値": estimated_users, "単位": "人"},
+    {"指標": "1事業所あたり潜在利用者数", "値": f"{users_per_competitor:,.1f} 人/事業所" if users_per_competitor is not None else "-", "数値": users_per_competitor, "単位": "人/事業所"},
+    {"指標": "250万円達成必要人数", "値": f"{needed_users:,.1f} 人", "数値": needed_users, "単位": "人"},
+    {"指標": "達成余力倍率", "値": f"{capacity_ratio:,.2f} 倍" if capacity_ratio is not None else "-", "数値": capacity_ratio, "単位": "倍"},
+])
+
+post_entry_metrics.extend([
+    {"指標": "参入後事業所数", "値": f"{post_offices:,.0f} 事業所" if post_offices is not None else "-", "数値": post_offices, "単位": "事業所"},
+    {"指標": "参入後実質競合数", "値": f"{post_competitors:,.1f} 事業所" if post_competitors is not None else "-", "数値": post_competitors, "単位": "事業所"},
+    {"指標": "参入後1事業所市場", "値": f"{post_users_per_competitor:,.1f} 人/事業所" if post_users_per_competitor is not None else "-", "数値": post_users_per_competitor, "単位": "人/事業所"},
+    {"指標": "参入後達成余力倍率", "値": f"{post_capacity_ratio:,.2f} 倍" if post_capacity_ratio is not None else "-", "数値": post_capacity_ratio, "単位": "倍"},
+])
 headline, comments = create_market_comment(current_metrics + post_entry_metrics)
 st.subheader(f"{municipality_name} の市場分析")
 st.success(f"市場判定: {headline}")
