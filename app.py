@@ -397,8 +397,17 @@ post_entry_metrics.extend([
     {"指標": "参入後達成余力倍率", "値": f"{post_capacity_ratio:,.2f} 倍" if post_capacity_ratio is not None else "-", "数値": post_capacity_ratio, "単位": "倍"},
 ])
 headline, comments = create_market_comment(current_metrics + post_entry_metrics)
-st.subheader(f"{municipality_name} の市場分析")
+
 st.success(f"市場判定: {headline}")
+
+st.subheader("一致する市町村データ")
+st.dataframe(
+    pd.DataFrame([selected_row]),
+    use_container_width=True,
+    hide_index=True,
+)
+
+st.subheader("現状の市場指標")
 
 metric_columns = st.columns(3)
 
